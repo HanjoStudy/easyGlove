@@ -1,0 +1,78 @@
+---
+title: "easyGlove"
+author: "Hanjo Odendaal"
+date: "11/04/2022"
+output: 
+  html_document: 
+    keep_md: yes
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Overview
+
+Repository to make the _GloVe: Global Vectors for Word Representation_ model implemented by `text2vex` more accessible.
+
+# Installation
+
+```{r, eval = FALSE}
+devtools::install_github("HanjoStudy/easyGlove")
+library(easyGlove)
+```
+
+# Example
+
+## Libraries
+
+```{r, message=FALSE}
+library(tidyverse)
+library(easyGlove)
+```
+
+
+## Data
+
+```{r}
+out <- read_lines("https://www.gutenberg.org/files/2701/2701-0.txt")
+```
+
+
+## Run Model
+
+```{r}
+set.seed(1)
+word_vectors <- model_glove(out, ngrams = 2,
+                   term_count_min = 5,
+                   skip_grams_window = 10L,
+                   runs = 10,
+                   cores = 14)
+
+```
+
+## Closest Word Vectors
+
+```{r}
+word_sim <- word_vectors %>% 
+  glove_closest_to(., "whale", top_n = 100)
+
+head(word_sim)
+```
+
+## Plotting results
+
+```{r, fig.width=15, fig.height=15}
+plot_glove(word_sim)
+```
+
+## Calculations
+
+```{r}
+(word_vec(word_vectors, "captain") + word_vec(word_vectors, "whale")) %>%
+  closest_to(., word_vectors = word_vectors, top_n = 20)
+```
+
+
