@@ -2,9 +2,7 @@
 title: "easyGlove"
 author: "Hanjo Odendaal"
 date: "11/04/2022"
-output: 
-  html_document: 
-    keep_md: yes
+output: github_document
 editor_options: 
   chunk_output_type: console
 ---
