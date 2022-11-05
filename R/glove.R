@@ -6,6 +6,9 @@
 #' @import logger
 #' @import tm
 #' @importFrom dplyr as_tibble mutate select
+#' @importFrom furrr future_map
+#' @importFrom parallel makePSOCKcluster stopCluster
+#' @importFrom future plan
 #' @importFrom glue glue
 #' @return tibble
 #' @export
@@ -16,15 +19,20 @@ model_glove <- function(txt, ngrams = 1, term_count_min = 5, skip_grams_window =
   if(verbose)
     log_info("Start cleaning text")
 
-  tokens <- txt %>%
-    removePunctuation %>%
-    stripWhitespace %>%
-    removeNumbers %>%
-    tolower %>%
-    removeWords(., unique(stopwords("SMART"))) %>%
-    strsplit(., split = " ",
-             fixed = T)
-  
+  if(cores){
+    if(verbose)
+      log_info(glue("Starting parrallel split of text with [{cores}] cores"))
+    
+    out <- split(txt, rep_len(1:cores, length(txt)))
+    cl <- makePSOCKcluster(cores)
+    on.exit(stopCluster(cl))
+    plan(cluster, workers = cl)
+    res <- future_map(out, clean_text, .progress = verbose)
+    tokens <- reduce(res, c)
+    
+  } else {
+    tokens <- clean_text(txt)
+  }
   if(verbose)
     log_info("Tokenize using itoken after cleaning")
   

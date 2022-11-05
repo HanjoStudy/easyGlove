@@ -43,10 +43,10 @@ set.seed(1)
 word_vectors <- model_glove(out, ngrams = 2,
                    term_count_min = 5,
                    skip_grams_window = 10L,
-                   embedding_dim = 200, 
-                   co_oc_max = 100, 
+                   embedding_dim = 20, 
+                   co_oc_max = 10, 
                    runs = 10,
-                   cores = 14,
+                   cores = parallel::detectCores() - 1,
                    verbose = TRUE)
 
 ```
