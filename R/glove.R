@@ -10,6 +10,7 @@
 #' @importFrom parallel makePSOCKcluster stopCluster
 #' @importFrom future plan cluster
 #' @importFrom glue glue
+#' @importFrom purrr reduce
 #' @return tibble
 #' @export
 #'
@@ -45,7 +46,7 @@ model_glove <- function(txt, ngrams = 1, term_count_min = 5, skip_grams_window =
   vocab <- prune_vocabulary(vocab, term_count_min = term_count_min)
   
   if(missing(co_oc_max)){
-    x_max <- length(vocab$doc_count)/100
+    co_oc_max <- length(vocab$doc_count)/100
   }
   
   if(verbose)
@@ -54,7 +55,7 @@ model_glove <- function(txt, ngrams = 1, term_count_min = 5, skip_grams_window =
   vectorizer <- vocab_vectorizer(vocab)
   tcm <- create_tcm(it, vectorizer, skip_grams_window = skip_grams_window)
 
-  glove <- GlobalVectors$new(rank = embedding_dim, x_max = x_max)
+  glove <- GlobalVectors$new(rank = embedding_dim, x_max = co_oc_max)
   wv_main <- glove$fit_transform(tcm, n_iter = runs, convergence_tol = 0.01, n_threads = cores)
   wv_context <- glove$components
 
