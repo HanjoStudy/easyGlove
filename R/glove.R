@@ -9,7 +9,7 @@
 #' @export
 #'
 model_glove <- function(txt, ngrams = 1, term_count_min = 5, skip_grams_window = 10L,
-                        runs = 10, cores = 8){
+                        runs = 10, wordrank = 50,cores = 8){
 
   tokens <- txt %>%
     removePunctuation %>%
@@ -28,7 +28,7 @@ model_glove <- function(txt, ngrams = 1, term_count_min = 5, skip_grams_window =
   vectorizer <- vocab_vectorizer(vocab)
   tcm <- create_tcm(iter, vectorizer, skip_grams_window = skip_grams_window)
 
-  glove <- GlobalVectors$new(rank = 50, x_max = 50)
+  glove <- GlobalVectors$new(rank = wordrank, x_max = wordrank)
   wv_main <- glove$fit_transform(tcm, n_iter = runs, convergence_tol = 0.01, n_threads = cores )
   wv_context <- glove$components
 
@@ -53,9 +53,6 @@ model_glove <- function(txt, ngrams = 1, term_count_min = 5, skip_grams_window =
 #'
 
 plot_glove <- function(word_sim, txt_size = 15, bg = "transparent"){
-
-  if(!inherits(word_sim, "model.glove"))
-    stop("Object `word_sim` not of class model.glove from model_glove")
 
   tibble(word_txt = names(word_sim), proximity = round(word_sim, 2)) %>%
     filter(proximity != 1) %>%
