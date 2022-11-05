@@ -18,8 +18,9 @@ model_glove <- function(txt, ngrams = 1, term_count_min = 5, skip_grams_window =
                         runs = 10, 
                         embedding_dim = 200, 
                         co_oc_max = 100, 
-                        learning_rate = 0.001,
+                        learning_rate = 0.01,
                         alpha = 0.75,
+                        convergence_tol = 0.01,
                         cores = 8, verbose = TRUE){
   
   if(verbose)
@@ -59,9 +60,12 @@ model_glove <- function(txt, ngrams = 1, term_count_min = 5, skip_grams_window =
 
   vectorizer <- vocab_vectorizer(vocab)
   tcm <- create_tcm(it, vectorizer, skip_grams_window = skip_grams_window)
-
+  
+  if(verbose)
+    log_info(glue("Start estimation"))
+  
   glove <- GlobalVectors$new(rank = embedding_dim, x_max = co_oc_max, learning_rate = learning_rate,  alpha = alpha)
-  wv_main <- glove$fit_transform(tcm, n_iter = runs, convergence_tol = 0.01, n_threads = cores)
+  wv_main <- glove$fit_transform(tcm, n_iter = runs, convergence_tol = convergence_tol, n_threads = cores)
   wv_context <- glove$components
 
   word_vectors <- wv_main + t(wv_context)

@@ -12,8 +12,9 @@ model_glove(
   runs = 10,
   embedding_dim = 200,
   co_oc_max = 100,
-  learning_rate = 0.001,
+  learning_rate = 0.01,
   alpha = 0.75,
+  convergence_tol = 0.01,
   cores = 8,
   verbose = TRUE
 )
