@@ -50,7 +50,7 @@ model_glove <- function(txt, ngrams = 1, term_count_min = 5, skip_grams_window =
   }
   
   if(verbose)
-    log_info(glue("Create tcm with x_max = [{x_max}]"))
+    log_info(glue("Create tcm with x_max = [{co_oc_max}]"))
 
   vectorizer <- vocab_vectorizer(vocab)
   tcm <- create_tcm(it, vectorizer, skip_grams_window = skip_grams_window)

@@ -29,7 +29,6 @@ library(tidyverse)
 library(easyGlove)
 ```
 
-
 ## Data
 
 ```{r}
