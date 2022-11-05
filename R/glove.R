@@ -8,7 +8,7 @@
 #' @importFrom dplyr as_tibble mutate select
 #' @importFrom furrr future_map
 #' @importFrom parallel makePSOCKcluster stopCluster
-#' @importFrom future plan
+#' @importFrom future plan cluster
 #' @importFrom glue glue
 #' @return tibble
 #' @export
