@@ -11,7 +11,8 @@ model_glove(
   skip_grams_window = 10L,
   runs = 10,
   embedding_dim = 200,
-  co_oc_max,
+  co_oc_max = 100,
+  learning_rate = 0.001,
   cores = 8,
   verbose = TRUE
 )

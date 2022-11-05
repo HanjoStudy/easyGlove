@@ -15,7 +15,11 @@
 #' @export
 #'
 model_glove <- function(txt, ngrams = 1, term_count_min = 5, skip_grams_window = 10L,
-                        runs = 10, embedding_dim = 200, co_oc_max, cores = 8, verbose = TRUE){
+                        runs = 10, 
+                        embedding_dim = 200, 
+                        co_oc_max = 100, 
+                        learning_rate = 0.001,
+                        cores = 8, verbose = TRUE){
   
   if(verbose)
     log_info("Start cleaning text")
@@ -55,7 +59,7 @@ model_glove <- function(txt, ngrams = 1, term_count_min = 5, skip_grams_window =
   vectorizer <- vocab_vectorizer(vocab)
   tcm <- create_tcm(it, vectorizer, skip_grams_window = skip_grams_window)
 
-  glove <- GlobalVectors$new(rank = embedding_dim, x_max = co_oc_max)
+  glove <- GlobalVectors$new(rank = embedding_dim, x_max = co_oc_max, learning_rate = learning_rate,  alpha = 0.75)
   wv_main <- glove$fit_transform(tcm, n_iter = runs, convergence_tol = 0.01, n_threads = cores)
   wv_context <- glove$components
 
