@@ -13,6 +13,7 @@ model_glove(
   embedding_dim = 200,
   co_oc_max = 100,
   learning_rate = 0.001,
+  alpha = 0.75,
   cores = 8,
   verbose = TRUE
 )
