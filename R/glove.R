@@ -3,13 +3,18 @@
 #' @description runs a GloVe model on the text within the articles or provided texts
 #' @param txt character vector of the text to analyse
 #' @import text2vec
+#' @import logger
 #' @import tm
 #' @importFrom dplyr as_tibble mutate select
+#' @importFrom glue glue
 #' @return tibble
 #' @export
 #'
 model_glove <- function(txt, ngrams = 1, term_count_min = 5, skip_grams_window = 10L,
-                        runs = 10, wordrank = 50,cores = 8){
+                        runs = 10, embedding_dim = 200, co_oc_max, cores = 8, verbose = TRUE){
+  
+  if(verbose)
+    log_info("Start cleaning text")
 
   tokens <- txt %>%
     removePunctuation %>%
@@ -19,17 +24,30 @@ model_glove <- function(txt, ngrams = 1, term_count_min = 5, skip_grams_window =
     removeWords(., unique(stopwords("SMART"))) %>%
     strsplit(., split = " ",
              fixed = T)
-
-  vocab <- create_vocabulary(itoken(tokens), ngram = c(1, ngrams),
+  
+  if(verbose)
+    log_info("Tokenize using itoken after cleaning")
+  
+  it <- itoken(tokens, progressbar = verbose)
+  
+  if(verbose)
+    log_info("Create vocabulary")
+  vocab <- create_vocabulary(it, ngram = c(1, ngrams),
                              stopwords = tm::stopwords("english"))
   vocab <- prune_vocabulary(vocab, term_count_min = term_count_min)
+  
+  if(missing(co_oc_max)){
+    x_max <- length(vocab$doc_count)/100
+  }
+  
+  if(verbose)
+    log_info(glue("Create tcm with x_max = [{x_max}]"))
 
-  iter <- itoken(tokens)
   vectorizer <- vocab_vectorizer(vocab)
-  tcm <- create_tcm(iter, vectorizer, skip_grams_window = skip_grams_window)
+  tcm <- create_tcm(it, vectorizer, skip_grams_window = skip_grams_window)
 
-  glove <- GlobalVectors$new(rank = wordrank, x_max = wordrank)
-  wv_main <- glove$fit_transform(tcm, n_iter = runs, convergence_tol = 0.01, n_threads = cores )
+  glove <- GlobalVectors$new(rank = embedding_dim, x_max = x_max)
+  wv_main <- glove$fit_transform(tcm, n_iter = runs, convergence_tol = 0.01, n_threads = cores)
   wv_context <- glove$components
 
   word_vectors <- wv_main + t(wv_context)

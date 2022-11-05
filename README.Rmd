@@ -36,7 +36,6 @@ library(easyGlove)
 out <- read_lines("https://www.gutenberg.org/files/2701/2701-0.txt")
 ```
 
-
 ## Run Model
 
 ```{r}
@@ -44,9 +43,11 @@ set.seed(1)
 word_vectors <- model_glove(out, ngrams = 2,
                    term_count_min = 5,
                    skip_grams_window = 10L,
-                   wordrank = 50,
+                   embedding_dim = 200, 
+                   co_oc_max = 100, 
                    runs = 10,
-                   cores = 14)
+                   cores = 14,
+                   verbose = TRUE)
 
 ```
 

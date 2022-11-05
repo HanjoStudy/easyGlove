@@ -10,7 +10,10 @@ model_glove(
   term_count_min = 5,
   skip_grams_window = 10L,
   runs = 10,
-  cores = 8
+  embedding_dim = 200,
+  co_oc_max,
+  cores = 8,
+  verbose = TRUE
 )
 }
 \arguments{
