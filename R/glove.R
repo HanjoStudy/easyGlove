@@ -47,9 +47,15 @@ model_glove <- function(txt, ngrams = 1, term_count_min = 5, skip_grams_window =
   
   if(verbose)
     log_info("Create vocabulary")
+  
   vocab <- create_vocabulary(it, ngram = c(1, ngrams),
                              stopwords = tm::stopwords("english"))
+  if(verbose)
+    log_info(glue("Vocabulary: [length - {nrow(vocab)}] [tokens - {sum(vocab$term_count)}]"))
+
   vocab <- prune_vocabulary(vocab, term_count_min = term_count_min)
+  if(verbose)
+    log_info(glue("Vocabulary after term_count_min = {term_count_min}: [length - {nrow(vocab)}] [tokens - {sum(vocab$term_count)}]"))
   
   if(missing(co_oc_max)){
     co_oc_max <- length(vocab$doc_count)/100
